@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import json
 from pandas import DataFrame as df
 from tabulate import tabulate
+import sys
 
 page = requests.get("https://xoyondo.com/dp/MgcAgE04gPaVUf0/YLoiHW7Mgd")
 soup = BeautifulSoup(page.text, 'html.parser')
@@ -38,9 +39,15 @@ for i in range(21):
 #print(date) # multidimensional list
 
 ################################################################################
-# extracted
-# TODO: insert code from DESKTOP PC
+# extracted people
+people_extr = soup.find_all(class_ = 'name-abbrev-col-inner')
+removable = ["live-...", "m----...", "onlin..."] # needs to get ignored, dont know yet why there shown
+for i in people_extr:
+    if i.contents[0] not in removable:
+        people.append(i.contents[0])
+
 ################################################################################
-#
-table = date
+
+print(people)
+table = [people, date]
 print(tabulate(table, headers='firstrow', tablefmt='fancy_grid'))
