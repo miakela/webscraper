@@ -16,7 +16,6 @@ ynm = []
 
 ################################################################################
 # extracted dates
-
 extr_months = soup.find_all(class_ = 'text-uppercase font-size-80 mt-1')
 for i in extr_months:
     months.append(i.string)
@@ -38,24 +37,33 @@ removable = ["live-...", "m----...", "onlin...", "Onlin..."] # needs to get igno
 for i in extr_people:
     if i.contents[0] not in removable:
         people.append(i.contents[0])
-print(people)
+
 ################################################################################
 # extracted votes = YesNoMaybe
 
-removable_names = ["LIVE-ANGELIKA", "LIVE-MAIK", "M-----------------------------", "ONLINE- ZISKA", "ONLINE-ANGELIKA", "ONLINE-MAIK"]
+allowed_votings = ['0', '1', '2']
 for element in soup.find_all("tr"):
     for td in element.find_all("td"):
         try:
-            if td['data-sort'] not in removable_names:
+            if td['data-sort'] in allowed_votings:
                 ynm.append(td['data-sort'])
         except KeyError:
             pass
-print(ynm)
+
+# change numeric into readable words :d
+for number in range(len(ynm)):
+    if ynm[number] == '0':
+        ynm[number] = 'Ja'
+    elif ynm[number] == '1':
+        ynm[number] = 'Vielleicht'
+    else:
+        ynm[number] = 'Nein'
+
 ################################################################################
-# split vote list into multidim. list
+# split vote list into multidim. list for table
 
 votable = len(months) + 1
-print(people)
+
 votes = [[0 for x in range(votable)] for x in range(len(people))]
 
 for j in range(len(people)):
@@ -70,16 +78,6 @@ for j in range(len(people)):
         votes[j][i] = ynm[i-1]
         x +=1
     del ynm[0:x]
-
-################################################################################
-# join people with votes
-# votes = [[0]*(len(people))*(len(votable))]
-# for columns in range(len(people)):
-#     for rows in range(len(votable)):
-#         votes[columns][rows] = people[columns]
-
-
-
 
 ################################################################################
 # formatting and printing table
